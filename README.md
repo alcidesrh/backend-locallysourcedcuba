@@ -28,11 +28,11 @@
     <img src="favicon.ico" alt="Logo" width="40" height="40">
   </a>
 
-  <h3 align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
+<a href="https://github.com/othneildrew/Best-README-Template">
+  <h3 align="center" style="background-color: gray;">
     <img src="logo.png" alt="Logo" width="40" height="40">
-  </a>
   </h3>
+  </a>
 
   <p align="center">
     An awesome README template to jumpstart your projects!
