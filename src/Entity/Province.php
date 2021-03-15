@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ProvinceRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ProvinceRepository::class)
  */
+#[ApiResource]
 class Province
 {
     /**
@@ -20,6 +22,7 @@ class Province
     /**
      * @ORM\Column(type="string", length=20)
      */
+    #[Assert\NotBlank]
     private $name;
 
     public function getId(): ?int

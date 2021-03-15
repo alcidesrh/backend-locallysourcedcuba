@@ -13,6 +13,7 @@
         "doctrine/doctrine-bundle": "^2.2",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.8",
+        "fzaninotto/faker": "^1.5",
         "nelmio/cors-bundle": "^2.1",
         "phpdocumentor/reflection-docblock": "^5.2",
         "symfony/asset": "5.2.*",
@@ -29,7 +30,8 @@
         "symfony/serializer": "5.2.*",
         "symfony/twig-bundle": "^5.2",
         "symfony/validator": "5.2.*",
-        "symfony/yaml": "5.2.*"
+        "symfony/yaml": "5.2.*",
+        "webonyx/graphql-php": "^14.5"
     },
     "config": {
         "optimize-autoloader": true,
@@ -75,6 +77,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
         "symfony/debug-bundle": "^5.2",
         "symfony/maker-bundle": "^1.29",
         "symfony/stopwatch": "^5.2",
