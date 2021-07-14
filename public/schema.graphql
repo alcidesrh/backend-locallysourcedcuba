@@ -1,0 +1,138 @@
+type Query {
+  node(id: ID!): Node
+  guide(id: ID!): Guide
+  guides(
+    # Returns the first n elements from the list.
+    first: Int
+
+    # Returns the last n elements from the list.
+    last: Int
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+  ): GuideConnection
+  provinces(
+    # Returns the current page.
+    page: Int
+
+    # Returns the number of items per page.
+    itemsPerPage: Int
+  ): ProvinceConnection
+}
+
+# A node, according to the Relay specification.
+interface Node {
+  # The id of this node.
+  id: ID!
+}
+
+#
+type Guide implements Node {
+  id: ID!
+  _id: Int!
+  name: String!
+  lastName: String
+  email: String
+  phone: String
+  bonus: Int
+}
+
+# Connection for Guide.
+type GuideConnection {
+  edges: [GuideEdge]
+  pageInfo: GuidePageInfo!
+  totalCount: Int!
+}
+
+# Edge of Guide.
+type GuideEdge {
+  node: Guide
+  cursor: String!
+}
+
+# Information about the current page.
+type GuidePageInfo {
+  endCursor: String
+  startCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+# Connection for Province.
+type ProvinceConnection {
+  collection: [Province]
+  paginationInfo: ProvincePaginationInfo!
+}
+
+#
+type Province implements Node {
+  id: ID!
+  _id: Int!
+  name: String!
+}
+
+# Information about the pagination.
+type ProvincePaginationInfo {
+  itemsPerPage: Int!
+  lastPage: Int!
+  totalCount: Int!
+}
+
+type Mutation {
+  # Deletes a Guide.
+  deleteGuide(input: deleteGuideInput!): deleteGuidePayload
+
+  # Updates a Guide.
+  updateGuide(input: updateGuideInput!): updateGuidePayload
+
+  # Creates a Guide.
+  createGuide(input: createGuideInput!): createGuidePayload
+}
+
+#
+input deleteGuideInput {
+  id: ID!
+  clientMutationId: String
+}
+
+#
+type deleteGuidePayload {
+  guide: Guide
+  clientMutationId: String
+}
+
+#
+input updateGuideInput {
+  id: ID!
+  name: String
+  lastName: String
+  email: String
+  phone: String
+  bonus: Int
+  clientMutationId: String
+}
+
+#
+type updateGuidePayload {
+  guide: Guide
+  clientMutationId: String
+}
+
+#
+input createGuideInput {
+  name: String!
+  lastName: String
+  email: String
+  phone: String
+  bonus: Int
+  clientMutationId: String
+}
+
+#
+type createGuidePayload {
+  guide: Guide
+  clientMutationId: String
+}
