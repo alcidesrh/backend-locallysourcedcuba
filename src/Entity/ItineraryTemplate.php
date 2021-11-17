@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ItineraryTemplateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=ItineraryTemplateRepository::class)
  */
+#[ApiResource]
 class ItineraryTemplate
 {
     /**
@@ -30,9 +32,20 @@ class ItineraryTemplate
     private $destination;
 
     /**
-     * @ORM\OneToMany(targetEntity=ItineraryDayTemplate::class, mappedBy="itinerary", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=ItineraryDayTemplate::class, mappedBy="itinerary", orphanRemoval=true, cascade={"persist"})
      */
     private $itineraryDays;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=House::class)
+     */
+    private $house;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=TourTemplate::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $tourTemplate;
 
     public function __construct()
     {
@@ -94,6 +107,30 @@ class ItineraryTemplate
                 $itineraryDay->setItinerary(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getHouse(): ?House
+    {
+        return $this->house;
+    }
+
+    public function setHouse(?House $house): self
+    {
+        $this->house = $house;
+
+        return $this;
+    }
+
+    public function getTourTemplate(): ?TourTemplate
+    {
+        return $this->tourTemplate;
+    }
+
+    public function setTourTemplate(?TourTemplate $tourTemplate): self
+    {
+        $this->tourTemplate = $tourTemplate;
 
         return $this;
     }

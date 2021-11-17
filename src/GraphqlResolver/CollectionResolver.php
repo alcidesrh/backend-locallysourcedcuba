@@ -4,17 +4,11 @@ namespace App\GraphqlResolver;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Paginator;
 use ApiPlatform\Core\GraphQl\Resolver\QueryCollectionResolverInterface;
-use App\Entity\Destination;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
 
 final class CollectionResolver implements QueryCollectionResolverInterface
 {
-    /**
-     * @param iterable<Destination> $collection
-     *
-     * @return iterable<GuDestinationide>
-     */
     public function __construct(private EntityManagerInterface $em)
     {
 

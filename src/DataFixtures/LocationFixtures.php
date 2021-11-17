@@ -35,8 +35,8 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
         foreach ($this->oldEntityManager->getRepository(TransportationDestinationPrice::class)->findAll() as $value) {
 
             $locationDistance = new LocationDistance();
-            $locationDistance->setLocation1($manager->getRepository(Location::class)->find($value->getStartDestination()->getId()))
-            ->setLocation2($manager->getRepository(Location::class)->find($value->getEndDestination()->getId()))
+            $locationDistance->setLocation1($manager->getRepository(Location::class)->findOneBy(['name' => $value->getStartDestination()->getName()]))
+            ->setLocation2($manager->getRepository(Location::class)->findOneBy(['name' => $value->getEndDestination()->getName()]))
             ->setKms($value->getKms());
             $manager->persist($locationDistance);
         }

@@ -32,7 +32,7 @@ class HouseSeason
     private $endDate;
 
     /**
-     * @ORM\OneToMany(targetEntity=HouseSeasonRoom::class, mappedBy="houseSeason", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=HouseSeasonRoom::class, mappedBy="houseSeason", orphanRemoval=true, cascade={"persist"})
      */
     private $seasonRooms;
 

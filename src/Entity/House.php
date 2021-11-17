@@ -2,21 +2,22 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\GraphqlResolver\HouseCollectionResolver;
 use App\Repository\HouseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiFilter;
-use App\GraphqlResolver\HouseCollectionResolver;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
 /**
  * @ORM\Entity(repositoryClass=HouseRepository::class)
  */
 #[ApiResource(
     graphql:[
-        
+
         'item_query',
         'collection_query',
         'create',
@@ -32,11 +33,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
                 'order' => ['type' => 'HouseFilter_order'],
                 'needle' => ['type' => 'String'],
                 'entity' => ['type' => 'String', 'defaultValue' => 'App\Entity\House'],
-            ]
+            ],
         ],
     ]
 )]
 #[ApiFilter(OrderFilter::class, properties:['name'], arguments:['orderParameterName' => 'order'])]
+#[ApiFilter(SearchFilter::class, properties:['destination' => 'exact'])]
 class House
 {
     /**
@@ -57,12 +59,12 @@ class House
     private $address;
 
     /**
-     * @ORM\Column(type="string", length=15, nullable=true)
+     * @ORM\Column(type="string", length=50, nullable=true)
      */
     private $phone;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=true)
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $email;
 
@@ -77,17 +79,17 @@ class House
     private $type;
 
     /**
-     * @ORM\ManyToMany(targetEntity=HouseFeature::class, inversedBy="houses", orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity=HouseFeature::class, inversedBy="houses", orphanRemoval=true, cascade={"persist"})
      */
     private $features;
 
     /**
-     * @ORM\OneToMany(targetEntity=HouseRoom::class, mappedBy="house", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=HouseRoom::class, mappedBy="house", orphanRemoval=true, cascade={"persist"})
      */
     private $rooms;
 
     /**
-     * @ORM\OneToMany(targetEntity=HouseSeason::class, mappedBy="house", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=HouseSeason::class, mappedBy="house", orphanRemoval=true, cascade={"persist"})
      */
     private $houseSeasons;
 

@@ -25,7 +25,7 @@ final class Version20210505045235 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE house_room_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE house_type_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE house_room_type_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE house (id INT NOT NULL, type_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, address VARCHAR(255) DEFAULT NULL, phone VARCHAR(15) DEFAULT NULL, email VARCHAR(50) DEFAULT NULL, description TEXT DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE house (id INT NOT NULL, type_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, address VARCHAR(255) DEFAULT NULL, phone VARCHAR(50) DEFAULT NULL, email VARCHAR(100) DEFAULT NULL, description TEXT DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_67D5399DC54C8C93 ON house (type_id)');
         $this->addSql('CREATE TABLE house_house_feature (house_id INT NOT NULL, house_feature_id INT NOT NULL, PRIMARY KEY(house_id, house_feature_id))');
         $this->addSql('CREATE INDEX IDX_4B7736006BB74515 ON house_house_feature (house_id)');

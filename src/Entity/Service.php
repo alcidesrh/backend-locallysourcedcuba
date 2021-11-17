@@ -7,11 +7,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
-
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ORM\Entity(repositoryClass=ServiceRepository::class)
  */
 #[ApiResource]
+#[ApiFilter(SearchFilter::class, properties:['code' => 'exact'])]
 class Service
 {
     /**
@@ -41,9 +43,15 @@ class Service
      */
     private $notifications;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Tour::class, mappedBy="service")
+     */
+    private $tours;
+
     public function __construct()
     {
         $this->notifications = new ArrayCollection();
+        $this->tours = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,6 +117,36 @@ class Service
     {
         if ($this->notifications->removeElement($notification)) {
             $notification->removeService($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tour[]
+     */
+    public function getTours(): Collection
+    {
+        return $this->tours;
+    }
+
+    public function addTour(Tour $tour): self
+    {
+        if (!$this->tours->contains($tour)) {
+            $this->tours[] = $tour;
+            $tour->setService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTour(Tour $tour): self
+    {
+        if ($this->tours->removeElement($tour)) {
+            // set the owning side to null (unless already changed)
+            if ($tour->getService() === $this) {
+                $tour->setService(null);
+            }
         }
 
         return $this;

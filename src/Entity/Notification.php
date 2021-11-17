@@ -82,19 +82,13 @@ class Notification
     private $priority;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Service::class, inversedBy="notifications")
+     * @ORM\ManyToMany(targetEntity=Service::class, inversedBy="notifications", cascade={"persist"})
      */
     private $services;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Notification::class, mappedBy="notification", orphanRemoval=true)
-     */
-    private $tourTemplateNotifications;
 
     public function __construct()
     {
         $this->services = new ArrayCollection();
-        $this->tourTemplateNotifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -188,47 +182,5 @@ class Notification
             }
             $em->flush();
         }
-    }
-
-    public function getNotification(): ?self
-    {
-        return $this->notification;
-    }
-
-    public function setNotification(?self $notification): self
-    {
-        $this->notification = $notification;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|self[]
-     */
-    public function getTourTemplateNotifications(): Collection
-    {
-        return $this->tourTemplateNotifications;
-    }
-
-    public function addTourTemplateNotification(self $tourTemplateNotification): self
-    {
-        if (!$this->tourTemplateNotifications->contains($tourTemplateNotification)) {
-            $this->tourTemplateNotifications[] = $tourTemplateNotification;
-            $tourTemplateNotification->setNotification($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTourTemplateNotification(self $tourTemplateNotification): self
-    {
-        if ($this->tourTemplateNotifications->removeElement($tourTemplateNotification)) {
-            // set the owning side to null (unless already changed)
-            if ($tourTemplateNotification->getNotification() === $this) {
-                $tourTemplateNotification->setNotification(null);
-            }
-        }
-
-        return $this;
     }
 }

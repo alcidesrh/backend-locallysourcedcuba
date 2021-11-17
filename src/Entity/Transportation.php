@@ -32,12 +32,12 @@ class Transportation
     private $driver;
 
     /**
-     * @ORM\OneToMany(targetEntity=TransportationPrice::class, mappedBy="transportation", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=TransportationPrice::class, mappedBy="transportation", orphanRemoval=true, cascade={"persist"})
      */
     private $prices;
 
     /**
-     * @ORM\OneToMany(targetEntity=TransportationRoute::class, mappedBy="transportation", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=TransportationRoute::class, mappedBy="transportation", orphanRemoval=true, cascade={"persist"})
      */
     private $routes;
 

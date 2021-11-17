@@ -2,19 +2,19 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\TourTemplateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=TourTemplateRepository::class)
  */
 #[ApiResource]
-#[ApiFilter(SearchFilter::class, properties: ['tourType' => 'exact'])]
+#[ApiFilter(SearchFilter::class, properties:['tourType' => 'exact'])]
 class TourTemplate
 {
     /**
@@ -97,7 +97,7 @@ class TourTemplate
     private $days;
 
     /**
-     * @ORM\Column(type="string", length=9, nullable=true)
+     * @ORM\Column(type="smallint", nullable=true)
      */
     private $startDay;
 
@@ -122,20 +122,26 @@ class TourTemplate
     private $houseType;
 
     /**
-     * @ORM\OneToMany(targetEntity=ItineraryDayTemplate::class, mappedBy="tourTemplate", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=ItineraryTemplate::class, mappedBy="tourTemplate", orphanRemoval=true, cascade={"persist"})
      */
     private $itineraries;
 
     /**
-     * @ORM\OneToMany(targetEntity=NotificationTourTemplate::class, mappedBy="tourTemplate", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=NotificationTourTemplate::class, mappedBy="tourTemplate", orphanRemoval=true, cascade={"persist"})
      */
     private $notifications;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Tour::class, mappedBy="template")
+     */
+    private $tours;
 
     public function __construct()
     {
         $this->activities = new ArrayCollection();
         $this->itineraries = new ArrayCollection();
         $this->notifications = new ArrayCollection();
+        $this->tours = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -323,12 +329,12 @@ class TourTemplate
         return $this;
     }
 
-    public function getStartDay(): ?string
+    public function getStartDay(): ?int
     {
         return $this->startDay;
     }
 
-    public function setStartDay(?string $startDay): self
+    public function setStartDay(?int $startDay): self
     {
         $this->startDay = $startDay;
 
@@ -384,14 +390,14 @@ class TourTemplate
     }
 
     /**
-     * @return Collection|ItineraryDayTemplate[]
+     * @return Collection|ItineraryTemplate[]
      */
     public function getItineraries(): Collection
     {
         return $this->itineraries;
     }
 
-    public function addItinerary(ItineraryDayTemplate $itinerary): self
+    public function addItinerary(ItineraryTemplate $itinerary): self
     {
         if (!$this->itineraries->contains($itinerary)) {
             $this->itineraries[] = $itinerary;
@@ -401,7 +407,7 @@ class TourTemplate
         return $this;
     }
 
-    public function removeItinerary(ItineraryDayTemplate $itinerary): self
+    public function removeItinerary(ItineraryTemplate $itinerary): self
     {
         if ($this->itineraries->removeElement($itinerary)) {
             // set the owning side to null (unless already changed)
@@ -437,6 +443,36 @@ class TourTemplate
             // set the owning side to null (unless already changed)
             if ($notification->getTourTemplate() === $this) {
                 $notification->setTourTemplate(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tour[]
+     */
+    public function getTours(): Collection
+    {
+        return $this->tours;
+    }
+
+    public function addTour(Tour $tour): self
+    {
+        if (!$this->tours->contains($tour)) {
+            $this->tours[] = $tour;
+            $tour->setTemplate($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTour(Tour $tour): self
+    {
+        if ($this->tours->removeElement($tour)) {
+            // set the owning side to null (unless already changed)
+            if ($tour->getTemplate() === $this) {
+                $tour->setTemplate(null);
             }
         }
 

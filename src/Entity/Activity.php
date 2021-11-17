@@ -78,21 +78,14 @@ class Activity
     private $type;
 
     /**
-     * @ORM\OneToMany(targetEntity=ActivityCombo::class, mappedBy="parent", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=ActivityCombo::class, mappedBy="parent", orphanRemoval=true, cascade={"persist"})
      * @ORM\OrderBy({"priority" = "ASC"})
      */
     private $activities;
 
-    /**
-     * @ORM\OneToMany(targetEntity=ActivityCombo::class, mappedBy="activity", orphanRemoval=true)
-     * @ORM\OrderBy({"priority" = "ASC"})
-     */
-    private $activitiesItems;
-
     public function __construct()
     {
         $this->activities = new ArrayCollection();
-        $this->activitiesItems = new ArrayCollection();
     }
 
     public function getId(): ?int

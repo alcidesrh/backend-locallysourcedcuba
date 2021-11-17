@@ -26,7 +26,7 @@ class NotificationTourTemplate
     private $tourTemplate;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Notification::class, inversedBy="tourTemplateNotifications")
+     * @ORM\ManyToOne(targetEntity=Notification::class)
      * @ORM\JoinColumn(nullable=false)
      */
     private $notification;

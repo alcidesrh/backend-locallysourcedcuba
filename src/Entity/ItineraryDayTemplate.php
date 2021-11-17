@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ItineraryDayTemplateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=ItineraryDayTemplateRepository::class)
  */
+#[ApiResource]
 class ItineraryDayTemplate
 {
     /**
@@ -36,10 +38,9 @@ class ItineraryDayTemplate
     private $noGuide;
 
     /**
-     * @ORM\ManyToOne(targetEntity=TourTemplate::class, inversedBy="itineraries")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="smallint", nullable=true)
      */
-    private $tourTemplate;
+    private $day;
 
     public function __construct()
     {
@@ -89,7 +90,7 @@ class ItineraryDayTemplate
 
     public function getNoGuide(): ?bool
     {
-        return $this->noGuide;
+        return $this->noGuide ?? false;
     }
 
     public function setNoGuide(?bool $noGuide): self
@@ -99,14 +100,14 @@ class ItineraryDayTemplate
         return $this;
     }
 
-    public function getTourTemplate(): ?TourTemplate
+    public function getDay(): ?int
     {
-        return $this->tourTemplate;
+        return $this->day;
     }
 
-    public function setTourTemplate(?TourTemplate $tourTemplate): self
+    public function setDay(?int $day): self
     {
-        $this->tourTemplate = $tourTemplate;
+        $this->day = $day;
 
         return $this;
     }

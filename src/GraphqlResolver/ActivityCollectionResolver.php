@@ -2,11 +2,9 @@
 
 namespace App\GraphqlResolver;
 
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Paginator;
 use ApiPlatform\Core\GraphQl\Resolver\QueryCollectionResolverInterface;
 use App\Entity\Destination;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
 
 final class ActivityCollectionResolver implements QueryCollectionResolverInterface
 {

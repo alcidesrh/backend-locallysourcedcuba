@@ -56,12 +56,12 @@ class Guide
     private $lastName;
 
     /**
-     * @ORM\Column(type="string", length=25, nullable=true)
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $email;
 
     /**
-     * @ORM\Column(type="string", length=10, nullable=true)
+     * @ORM\Column(type="string", length=50, nullable=true)
      */
     private $phone;
 
