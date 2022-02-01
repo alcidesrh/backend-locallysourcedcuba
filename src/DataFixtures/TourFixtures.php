@@ -2,10 +2,13 @@
 
 namespace App\DataFixtures;
 
-use App\DataFixtures\TourTemplateFixtures;
 use App\Entity\Booking;
+use App\Entity\BookingAccommodation;
+use App\Entity\BookingTransfer;
 use App\Entity\Destination;
+use App\Entity\Driver;
 use App\Entity\Guide;
+use App\Entity\House;
 use App\Entity\HouseType;
 use App\Entity\Itinerary;
 use App\Entity\ItineraryDay;
@@ -17,18 +20,18 @@ use App\Entity\Transportation;
 use DateInterval;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
-class TourFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
+class TourFixtures extends Fixture implements FixtureGroupInterface //, DependentFixtureInterface
+
 {
-    public function getDependencies()
-    {
-        return [
-            TourTemplateFixtures::class,
-        ];
-    }
+    // public function getDependencies()
+    // {
+    //     return [
+    //         TourTemplateFixtures::class,
+    //     ];
+    // }
 
     public static function getGroups(): array
     {
@@ -37,21 +40,27 @@ class TourFixtures extends Fixture implements FixtureGroupInterface, DependentFi
     public function load(ObjectManager $manager)
     {
 
-        foreach ($manager->getRepository(Tour::class)->findAll() as $value) {
+        // foreach ($manager->getRepository(Tour::class)->findAll() as $value) {
 
-            // $value->setEndDate((clone $value->getStartDate())->add(new DateInterval("P{$value->getDays()}D")))
-            //     ->setStartDay($value->getEndDate()->format('N'));
+        // $value->setEndDate((clone $value->getStartDate())->add(new DateInterval("P{$value->getDays()}D")))
+        //     ->setStartDay($value->getEndDate()->format('N'));
 
-            // $manager->persist($value);
-            $manager->remove($value);
+        // $manager->persist($value);
+        //     $manager->remove($value);
 
-        }
+        // }
 
-        $manager->flush();
+        // $manager->flush();
         // return;
         $faker = Factory::create();
         $guides = $manager->getRepository(Guide::class)->findAll();
         $serviceType = ['htc', 'ls'];
+
+        $destinations = $manager->getRepository(Destination::class)->findAll();
+        $transportations = $manager->getRepository(Transportation::class)->findAll();
+        $housesType = $manager->getRepository(HouseType::class)->findAll();
+        $drivers = $manager->getRepository(Driver::class)->findAll();
+        $houses = $manager->getRepository(House::class)->findAll();
 
         for ($i = 0, $days = mt_rand(0, 30); $i < 60; $i++, $days = mt_rand(0, 30)) {
 
@@ -71,11 +80,7 @@ class TourFixtures extends Fixture implements FixtureGroupInterface, DependentFi
                 for ($j = 0; $j < count($notifications); $j++) {
                     $item->addNotification((new NotificationTour)->setDays($notifications[$j]->getDays())->setNotification($notifications[$j]->getNotification()));
                 }
-
             } else {
-                $destinations = $manager->getRepository(Destination::class)->findAll();
-                $transportations = $manager->getRepository(Transportation::class)->findAll();
-                $housesType = $manager->getRepository(HouseType::class)->findAll();
 
                 $days = [6, 8, 10, 15, 20][mt_rand(0, 4)];
                 $add = $days + 1;
@@ -113,7 +118,6 @@ class TourFixtures extends Fixture implements FixtureGroupInterface, DependentFi
                 for ($p = 0; $p < count($notifications) - 1; $p++) {
                     $item->addNotification((new NotificationTour)->setDays($notifications[$p]->getDays())->setNotification($notifications[$p]->getNotification()));
                 }
-
             }
 
             $code = $this->generateCode($item);
@@ -126,21 +130,58 @@ class TourFixtures extends Fixture implements FixtureGroupInterface, DependentFi
 
                 $code .= $pos && is_numeric($aux) ? '-' . ((int) $aux + 1) : '-' . intval(count($items) + 1);
                 $item->setCode($code);
-
             } else {
                 $item->setCode($code);
             }
 
             for ($j = 0; $j < mt_rand(0, 10); $j++) {
                 $booking = new Booking();
+                if ($service->getCode() != 'htc') {
+                    $dateIn = $item->getStartDate();
+                    foreach ($item->getItineraries() as $itinerary) {
+                        $bookingAccommodation = (new BookingAccommodation())->setItinerary($itinerary);
+                        if ($dateIn) {
+                            $dateOut = (clone $dateIn)->add(new \DateInterval("P{$itinerary->getDays()}D"));
+                            $bookingAccommodation->setDateIn($dateIn)->setDateOut($dateOut);
+                            $dateIn = $dateOut;
+                        }
+                        $booking->addBookingAccommodation($bookingAccommodation);
+                    }
+                }
                 $item->addBooking($booking->setName($faker->name())->setPax(mt_rand(1, 8))->setLp(mt_rand(0, 10)));
+
+                $manager->persist($item);
+
+                $manager->flush();
+
+                if ($service->getCode() != 'htc') {
+                    $dateIn = $item->getStartDate();
+                    $dateOut = (clone $dateIn)->add(new \DateInterval("P{$item->getDays()}D"));
+                    foreach (['In', 'Out'] as $type) {
+                        $transfer = (new BookingTransfer)->setContact($faker->name)
+                            ->setCharge(mt_rand(1, 5))->setDate($type == 'In' ? $dateIn : $dateOut)->setFlightData($faker->sentence())
+                            ->setFromHour($type == 'In' ? $dateIn : $dateOut)->setHour($type == 'In' ? $dateIn : $dateOut)->setPrice(mt_rand(1, 5))
+                            ->setToHour($type == 'In' ? $dateIn : $dateOut)->setType($type)->setPersons($booking->getPax())
+                            ->setDestination($destinations[mt_rand(0, count($destinations) - 1)])
+                            ->setDriver($drivers[mt_rand(0, count($drivers) - 1)])->setNote($faker->paragraph());
+                        for ($j = 0; $j < mt_rand(2, 5); $j++) {
+                            $transfer->addHouse($houses[mt_rand(0, count($houses) - 1)]);
+                        }
+                        if ($transfer->getType() == 'In') {
+                            $transfer->setBookingIn($booking);
+                        } else {
+                            $transfer->setBookingOut($booking);
+                        }
+
+                        $manager->persist($transfer);
+                    }
+                }
             }
 
             $manager->persist($item);
 
             $manager->flush();
         }
-
     }
 
     public function generateCode(Tour $tour, $ext = false)

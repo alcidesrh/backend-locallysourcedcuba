@@ -4,11 +4,29 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use App\GraphqlResolver\NotificationTourIncompleteCollectionResolver;
+use App\Repository\NotificationTourRepository;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass=NotificationTourRepository::class)
  */
-#[ApiResource(order: ["notification.priority" => "ASC"])]
+#[ApiResource(
+    graphql:[
+        'item_query',
+        'collection_query',
+        'create',
+        'update',
+        'delete',
+        'notifications_tour_incomplete' => [
+            'collection_query' => NotificationTourIncompleteCollectionResolver::class,
+            'read' => false,
+            'args' => [
+                'service' => ['type' => 'String']
+            ],
+        ]
+        ],
+        order: ["notification.priority" => "ASC"]
+)]
 class NotificationTour
 {
     /**

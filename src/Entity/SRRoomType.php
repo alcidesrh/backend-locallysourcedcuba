@@ -32,7 +32,7 @@ class SRRoomType
     /**
      * @ORM\Column(type="smallint", nullable=true)
      */
-    private $rooms;
+    private $cant;
 
     public function getId(): ?int
     {
@@ -63,14 +63,14 @@ class SRRoomType
         return $this;
     }
 
-    public function getRooms(): ?int
+    public function getCant(): ?int
     {
-        return $this->rooms;
+        return $this->cant;
     }
 
-    public function setRooms(?int $rooms): self
+    public function setCant(?int $cant): self
     {
-        $this->rooms = $rooms;
+        $this->cant = $cant;
 
         return $this;
     }

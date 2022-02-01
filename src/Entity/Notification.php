@@ -86,6 +86,11 @@ class Notification
      */
     private $services;
 
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $slug;
+
     public function __construct()
     {
         $this->services = new ArrayCollection();
@@ -104,6 +109,7 @@ class Notification
     public function setName(string $name): self
     {
         $this->name = $name;
+        $this->slug = strtolower(preg_replace('/[^A-Za-z0-9-]+/', '-', $name));
 
         return $this;
     }
@@ -164,6 +170,18 @@ class Notification
     public function removeService(Service $service): self
     {
         $this->services->removeElement($service);
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }

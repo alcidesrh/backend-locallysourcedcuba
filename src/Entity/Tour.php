@@ -28,6 +28,7 @@ use Doctrine\Common\Collections\ArrayCollection;
         'delete',
         'list' => [
             'collection_query' => TourListResolver::class,
+            'read' => false,
             'args' => [
                 'service' => ['type' => 'String'],
                 'needle' => ['type' => 'String'],
@@ -40,6 +41,7 @@ use Doctrine\Common\Collections\ArrayCollection;
         ],
         'listLs' => [
             'collection_query' => TourLsListResolver::class,
+            'read' => false,
             'args' => [
                 'service' => ['type' => 'String'],
                 'needle' => ['type' => 'String'],
@@ -165,11 +167,6 @@ class Tour
     private $service;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Booking::class, inversedBy="tours", orphanRemoval=true, cascade={"persist"})
-     */
-    private $bookings;
-
-    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $startDate;
@@ -189,12 +186,23 @@ class Tour
      */
     private $endDate;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Booking::class, mappedBy="tour", orphanRemoval=true, cascade={"persist"})
+     */
+    private $bookings;
+
+    /**
+     * @ORM\OneToMany(targetEntity=BookingTransfer::class, mappedBy="tour")
+     */
+    private $bookingTransfers;
+
     public function __construct()
     {
         $this->activities = new ArrayCollection();
         $this->itineraries = new ArrayCollection();
         $this->notifications = new ArrayCollection();
         $this->bookings = new ArrayCollection();
+        $this->bookingTransfers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -490,30 +498,6 @@ class Tour
         return $this;
     }
 
-    /**
-     * @return Collection|Booking[]
-     */
-    public function getBookings(): Collection
-    {
-        return $this->bookings;
-    }
-
-    public function addBooking(Booking $booking): self
-    {
-        if (!$this->bookings->contains($booking)) {
-            $this->bookings[] = $booking;
-        }
-
-        return $this;
-    }
-
-    public function removeBooking(Booking $booking): self
-    {
-        $this->bookings->removeElement($booking);
-
-        return $this;
-    }
-
     public function getStartDate(): ?\DateTimeInterface
     {
         return $this->startDate;
@@ -558,6 +542,66 @@ class Tour
     public function setEndDate(?\DateTimeInterface $endDate): self
     {
         $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Booking[]
+     */
+    public function getBookings(): Collection
+    {
+        return $this->bookings;
+    }
+
+    public function addBooking(Booking $booking): self
+    {
+        if (!$this->bookings->contains($booking)) {
+            $this->bookings[] = $booking;
+            $booking->setTour($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBooking(Booking $booking): self
+    {
+        if ($this->bookings->removeElement($booking)) {
+            // set the owning side to null (unless already changed)
+            if ($booking->getTour() === $this) {
+                $booking->setTour(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BookingTransfer[]
+     */
+    public function getBookingTransfers(): Collection
+    {
+        return $this->bookingTransfers;
+    }
+
+    public function addBookingTransfer(BookingTransfer $bookingTransfer): self
+    {
+        if (!$this->bookingTransfers->contains($bookingTransfer)) {
+            $this->bookingTransfers[] = $bookingTransfer;
+            $bookingTransfer->setTour($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBookingTransfer(BookingTransfer $bookingTransfer): self
+    {
+        if ($this->bookingTransfers->removeElement($bookingTransfer)) {
+            // set the owning side to null (unless already changed)
+            if ($bookingTransfer->getTour() === $this) {
+                $bookingTransfer->setTour(null);
+            }
+        }
 
         return $this;
     }

@@ -2,16 +2,30 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\BookingRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BookingRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\GraphqlResolver\BookingCreateResolver;
+use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=BookingRepository::class)
  */
-#[ApiResource]
+#[ApiResource(
+    graphql:[
+        'item_query',
+        'collection_query',
+        'create' => [
+            'mutation' => BookingCreateResolver::class,
+        ],
+        'update',
+        'delete'
+    ]
+)]
+#[ApiFilter(SearchFilter::class, properties:['tour' => 'exact'])]
 
 class Booking
 {
@@ -38,11 +52,6 @@ class Booking
     private $lp;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Tour::class, mappedBy="bookings")
-     */
-    private $tours;
-
-    /**
      * @ORM\OneToOne(targetEntity=SleepingRequirement::class, inversedBy="booking", cascade={"persist", "remove"})
      */
     private $sleepingRequirement;
@@ -58,20 +67,22 @@ class Booking
     private $note;
 
     /**
-     * @ORM\ManyToMany(targetEntity=BookingTransfer::class)
-     * @ORM\JoinTable(name="booking_booking_transfersin")
+     * @ORM\ManyToOne(targetEntity=Tour::class, inversedBy="bookings", cascade={"persist"})
+     */
+    private $tour;
+
+    /**
+     * @ORM\OneToMany(targetEntity=BookingTransfer::class, mappedBy="bookingIn", orphanRemoval=true, cascade={"persist"})
      */
     private $transfersIn;
 
     /**
-     * @ORM\ManyToMany(targetEntity=BookingTransfer::class)
-     * @ORM\JoinTable(name="booking_booking_transfersout")
+     * @ORM\OneToMany(targetEntity=BookingTransfer::class, mappedBy="bookingOut", orphanRemoval=true, cascade={"persist"})
      */
     private $transfersOut;
 
     public function __construct()
     {
-        $this->tours = new ArrayCollection();
         $this->bookingAccommodations = new ArrayCollection();
         $this->transfersIn = new ArrayCollection();
         $this->transfersOut = new ArrayCollection();
@@ -114,33 +125,6 @@ class Booking
     public function setLp(?int $lp): self
     {
         $this->lp = $lp;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Tour[]
-     */
-    public function getTours(): Collection
-    {
-        return $this->tours;
-    }
-
-    public function addTour(Tour $tour): self
-    {
-        if (!$this->tours->contains($tour)) {
-            $this->tours[] = $tour;
-            $tour->addBooking($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTour(Tour $tour): self
-    {
-        if ($this->tours->removeElement($tour)) {
-            $tour->removeBooking($this);
-        }
 
         return $this;
     }
@@ -199,6 +183,18 @@ class Booking
         return $this;
     }
 
+    public function getTour(): ?Tour
+    {
+        return $this->tour;
+    }
+
+    public function setTour(?Tour $tour): self
+    {
+        $this->tour = $tour;
+
+        return $this;
+    }
+
     /**
      * @return Collection|BookingTransfer[]
      */
@@ -211,6 +207,7 @@ class Booking
     {
         if (!$this->transfersIn->contains($transfersIn)) {
             $this->transfersIn[] = $transfersIn;
+            $transfersIn->setBookingIn($this);
         }
 
         return $this;
@@ -218,7 +215,12 @@ class Booking
 
     public function removeTransfersIn(BookingTransfer $transfersIn): self
     {
-        $this->transfersIn->removeElement($transfersIn);
+        if ($this->transfersIn->removeElement($transfersIn)) {
+            // set the owning side to null (unless already changed)
+            if ($transfersIn->getBookingIn() === $this) {
+                $transfersIn->setBookingIn(null);
+            }
+        }
 
         return $this;
     }
@@ -235,6 +237,7 @@ class Booking
     {
         if (!$this->transfersOut->contains($transfersOut)) {
             $this->transfersOut[] = $transfersOut;
+            $transfersOut->setBookingTransferOut($this);
         }
 
         return $this;
@@ -242,7 +245,12 @@ class Booking
 
     public function removeTransfersOut(BookingTransfer $transfersOut): self
     {
-        $this->transfersOut->removeElement($transfersOut);
+        if ($this->transfersOut->removeElement($transfersOut)) {
+            // set the owning side to null (unless already changed)
+            if ($transfersOut->getBookingTransferOut() === $this) {
+                $transfersOut->setBookingTransferOut(null);
+            }
+        }
 
         return $this;
     }

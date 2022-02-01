@@ -2,15 +2,50 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\BookingTransferRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
+use App\GraphqlResolver\BookingTransferListResolver;
+use App\GraphqlResolver\TransfersPerBookingResolver;
+use App\GraphqlResolver\BookingTransferIncompleteResolver;
 /**
  * @ORM\Entity(repositoryClass=BookingTransferRepository::class)
  */
-#[ApiResource]
+#[ApiResource(
+    graphql:[
+        'item_query',
+        'collection_query',
+        'create',
+        'update',
+        'delete',
+        'per_booking' => [
+            'collection_query' => TransfersPerBookingResolver::class,
+            'read' => false,
+            'args' => [
+                'bookings' => ['type' => '[Int]', 'defaultValue' => null]
+            ],
+        ],
+        'list' => [
+            'collection_query' => BookingTransferListResolver::class,
+            'read' => false,
+            'args' => [
+                'needle' => ['type' => 'String'],
+                'from' => ['type' => 'String'],
+                'to' => ['type' => 'String'],
+                'notification' => ['type' => '[String]', 'defaultValue' => null],
+                'notificationComplete' => ['type' => 'Boolean', 'defaultValue' => null],
+                'driver' => ['type' => 'Int'],
+                'type' => ['type' => 'String'],
+            ],
+        ],
+        'incomplete' => [
+            'collection_query' => BookingTransferIncompleteResolver::class,
+            'read' => false
+        ],
+    ]
+)]
 class BookingTransfer
 {
     /**
@@ -95,6 +130,26 @@ class BookingTransfer
      */
     private $note;
 
+    /**
+     * @ORM\Column(type="string", length=3, nullable=true)
+     */
+    private $type;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Booking::class, inversedBy="transfersIn")
+     */
+    private $bookingIn;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Booking::class, inversedBy="transfersOut")
+     */
+    private $bookingOut;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Tour::class, inversedBy="bookingTransfers")
+     */
+    private $tour;
+
     public function __construct()
     {
         $this->houses = new ArrayCollection();
@@ -141,9 +196,9 @@ class BookingTransfer
         return $this;
     }
 
-    public function getHour(): ?\DateTimeInterface
+    public function getHour(): ?string
     {
-        return $this->hour;
+        return $this->hour ? $this->hour->format('H:i'):  null;
     }
 
     public function setHour(?\DateTimeInterface $hour): self
@@ -189,9 +244,9 @@ class BookingTransfer
         return $this;
     }
 
-    public function getFromHour(): ?\DateTimeInterface
+    public function getFromHour(): ?string
     {
-        return $this->fromHour;
+        return $this->fromHour ? $this->fromHour->format('H:i'): null;
     }
 
     public function setFromHour(?\DateTimeInterface $fromHour): self
@@ -201,9 +256,9 @@ class BookingTransfer
         return $this;
     }
 
-    public function getToHour(): ?\DateTimeInterface
+    public function getToHour(): ?string
     {
-        return $this->toHour;
+        return $this->toHour ? $this->toHour->format('H:i'): null;
     }
 
     public function setToHour(?\DateTimeInterface $toHour): self
@@ -293,6 +348,56 @@ class BookingTransfer
     public function setNote(?string $note): self
     {
         $this->note = $note;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getBookingIn(): ?Booking
+    {
+        return $this->bookingIn;
+    }
+
+    public function setBookingIn(?Booking $bookingIn): self
+    {
+        $this->bookingIn = $bookingIn;
+        $this->tour = $bookingIn->getTour();
+
+        return $this;
+    }
+
+    public function getBookingOut(): ?Booking
+    {
+        return $this->bookingOut;
+    }
+
+    public function setBookingOut(?Booking $bookingOut): self
+    {
+        $this->bookingOut = $bookingOut;
+        $this->tour = $bookingOut->getTour();
+
+        return $this;
+    }
+
+    public function getTour(): ?Tour
+    {
+        return $this->tour;
+    }
+
+    public function setTour(?Tour $tour): self
+    {
+        $this->tour = $tour;
 
         return $this;
     }

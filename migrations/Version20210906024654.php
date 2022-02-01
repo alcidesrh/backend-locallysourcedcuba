@@ -23,7 +23,8 @@ final class Version20210906024654 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE booking_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE notification_tour_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE tour_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE booking (id INT NOT NULL, name VARCHAR(255) DEFAULT NULL, pax SMALLINT DEFAULT NULL, lp SMALLINT DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE booking (id INT NOT NULL, tour_id INT DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, pax SMALLINT DEFAULT NULL, lp SMALLINT DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE INDEX IDX_E00CEDDE15ED8D43 ON booking (tour_id)');
         $this->addSql('CREATE TABLE notification_tour (id INT NOT NULL, tour_id INT NOT NULL, notification_id INT NOT NULL, days SMALLINT NOT NULL, complete BOOLEAN DEFAULT 0, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_D2EDB25315ED8D43 ON notification_tour (tour_id)');
         $this->addSql('CREATE INDEX IDX_D2EDB253EF1A9D84 ON notification_tour (notification_id)');
@@ -38,9 +39,7 @@ final class Version20210906024654 extends AbstractMigration
         $this->addSql('CREATE TABLE tour_activity (tour_id INT NOT NULL, activity_id INT NOT NULL, PRIMARY KEY(tour_id, activity_id))');
         $this->addSql('CREATE INDEX IDX_368B506915ED8D43 ON tour_activity (tour_id)');
         $this->addSql('CREATE INDEX IDX_368B506981C06096 ON tour_activity (activity_id)');
-        $this->addSql('CREATE TABLE tour_booking (tour_id INT NOT NULL, booking_id INT NOT NULL, PRIMARY KEY(tour_id, booking_id))');
-        $this->addSql('CREATE INDEX IDX_A0E6685F15ED8D43 ON tour_booking (tour_id)');
-        $this->addSql('CREATE INDEX IDX_A0E6685F3301C60 ON tour_booking (booking_id)');
+        $this->addSql('ALTER TABLE booking ADD CONSTRAINT FK_E00CEDDE15ED8D43 FOREIGN KEY (tour_id) REFERENCES tour (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE notification_tour ADD CONSTRAINT FK_D2EDB25315ED8D43 FOREIGN KEY (tour_id) REFERENCES tour (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE notification_tour ADD CONSTRAINT FK_D2EDB253EF1A9D84 FOREIGN KEY (notification_id) REFERENCES notification (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE tour ADD CONSTRAINT FK_6AD1F969B37D8B6B FOREIGN KEY (transfer_in_id) REFERENCES destination (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -50,27 +49,24 @@ final class Version20210906024654 extends AbstractMigration
         $this->addSql('ALTER TABLE tour ADD CONSTRAINT FK_6AD1F9695DA0FB8 FOREIGN KEY (template_id) REFERENCES tour_template (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE tour ADD CONSTRAINT FK_6AD1F969ED5CA9E6 FOREIGN KEY (service_id) REFERENCES service (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE tour_activity ADD CONSTRAINT FK_368B506915ED8D43 FOREIGN KEY (tour_id) REFERENCES tour (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE tour_activity ADD CONSTRAINT FK_368B506981C06096 FOREIGN KEY (activity_id) REFERENCES activity (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE tour_booking ADD CONSTRAINT FK_A0E6685F15ED8D43 FOREIGN KEY (tour_id) REFERENCES tour (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE tour_booking ADD CONSTRAINT FK_A0E6685F3301C60 FOREIGN KEY (booking_id) REFERENCES booking (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE tour_activity ADD CONSTRAINT FK_368B506981C06096 FOREIGN KEY (activity_id) REFERENCES activity (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');       
     }
 
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
-        $this->addSql('ALTER TABLE tour_booking DROP CONSTRAINT FK_A0E6685F3301C60');
+        $this->addSql('ALTER TABLE booking DROP CONSTRAINT FK_E00CEDDE15ED8D43');
         $this->addSql('ALTER TABLE notification_tour DROP CONSTRAINT FK_D2EDB25315ED8D43');
         $this->addSql('ALTER TABLE tour_activity DROP CONSTRAINT FK_368B506915ED8D43');
-        $this->addSql('ALTER TABLE tour_booking DROP CONSTRAINT FK_A0E6685F15ED8D43');
         $this->addSql('DROP SEQUENCE booking_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE booking_tour_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE notification_tour_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE tour_id_seq CASCADE');
         $this->addSql('DROP TABLE booking');
         $this->addSql('DROP TABLE notification_tour');
         $this->addSql('DROP TABLE tour');
         $this->addSql('DROP TABLE tour_activity');
-        $this->addSql('DROP TABLE tour_booking');
         $this->addSql('ALTER TABLE house ALTER phone TYPE VARCHAR(50)');
         $this->addSql('ALTER TABLE house ALTER email TYPE VARCHAR(100)');
     }

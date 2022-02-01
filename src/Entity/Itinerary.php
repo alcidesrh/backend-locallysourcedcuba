@@ -36,6 +36,11 @@ class Itinerary
     private $itineraryDays;
 
     /**
+     * @ORM\OneToMany(targetEntity=BookingAccommodation::class, mappedBy="itinerary", orphanRemoval=true, cascade={"persist"})
+     */
+    private $bookingAccommodation;
+
+    /**
      * @ORM\ManyToOne(targetEntity=House::class)
      */
     private $house;
@@ -49,6 +54,7 @@ class Itinerary
     public function __construct()
     {
         $this->itineraryDays = new ArrayCollection();
+        $this->bookingAccommodation = new ArrayCollection();
     }
 
     public function getId(): ?int

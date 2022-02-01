@@ -39,7 +39,7 @@ class TourRepository extends ServiceEntityRepository
     }
      */
 
-    function list(Service $service, \DateTime$from = null, \DateTime$to = null, $nocanceled = null, $needle = null, $template = null, $notification = null, $notificationComplete = null) {
+    function list(Service $service, \DateTime $from = null, \DateTime $to = null, $nocanceled = null, $needle = null, $template = null, $notification = null, $notificationComplete = null) {
 
         $from = $from ?? new DateTime();
         $from->setTime(0, 0, 0);
@@ -65,7 +65,7 @@ class TourRepository extends ServiceEntityRepository
             $query->andWhere('tour.startDate <= :date2')->setParameter('date2', $date2);
         }
         if ($nocanceled) {
-            $query->andWhere('tour.canceled IS NULL OR tour.canceled = 0');
+            $query->andWhere("tour.canceled IS NULL OR tour.canceled = '0'");
         }
         if ($template) {
             $query->andWhere('tour.template = :template')->setParameter('template', $template);

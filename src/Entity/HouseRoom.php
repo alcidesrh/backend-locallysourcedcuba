@@ -41,6 +41,11 @@ class HouseRoom
      */
     private $houseSeasonRooms;
 
+    /**
+     * @ORM\Column(type="smallint", nullable=true)
+     */
+    private $cant;
+
     public function __construct()
     {
         $this->houseSeasonRooms = new ArrayCollection();
@@ -113,6 +118,18 @@ class HouseRoom
                 $houseSeasonRoom->setRoom(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCant(): ?int
+    {
+        return $this->cant;
+    }
+
+    public function setCant(?int $cant): self
+    {
+        $this->cant = $cant;
 
         return $this;
     }

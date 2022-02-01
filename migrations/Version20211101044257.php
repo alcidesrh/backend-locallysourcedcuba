@@ -47,7 +47,7 @@ final class Version20211101044257 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_5F3E37356BB74515 ON booking_transfer_house (house_id)');
         $this->addSql('CREATE TABLE sleeping_requirement (id INT NOT NULL, accommodation_type_id INT DEFAULT NULL, description TEXT DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_413AD3EA8978F869 ON sleeping_requirement (accommodation_type_id)');
-        $this->addSql('CREATE TABLE srroom_type (id INT NOT NULL, room_type_id INT DEFAULT NULL, sleeping_requirement_id INT NOT NULL, rooms SMALLINT DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE srroom_type (id INT NOT NULL, room_type_id INT DEFAULT NULL, sleeping_requirement_id INT NOT NULL, cant SMALLINT DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_F7287958296E3073 ON srroom_type (room_type_id)');
         $this->addSql('CREATE INDEX IDX_F7287958AE2DDF69 ON srroom_type (sleeping_requirement_id)');
         $this->addSql('ALTER TABLE booking_booking_transfersin ADD CONSTRAINT FK_6D04DBCB3301C60 FOREIGN KEY (booking_id) REFERENCES booking (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');

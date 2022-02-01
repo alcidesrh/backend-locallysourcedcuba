@@ -26,18 +26,18 @@ class BookingHouse
     private $house;
 
     /**
-     * @ORM\ManyToMany(targetEntity=HouseRoom::class)
-     */
-    private $rooms;
-
-    /**
      * @ORM\ManyToOne(targetEntity=BookingAccommodation::class, inversedBy="houses")
      */
     private $bookingAccommodation;
 
+    /**
+     * @ORM\OneToMany(targetEntity=BookingHouseRoom::class, mappedBy="bookingHouse", orphanRemoval=true)
+     */
+    private $bookingHouseRooms;
+
     public function __construct()
     {
-        $this->rooms = new ArrayCollection();
+        $this->bookingHouseRooms = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -57,30 +57,6 @@ class BookingHouse
         return $this;
     }
 
-    /**
-     * @return Collection|HouseRoom[]
-     */
-    public function getRooms(): Collection
-    {
-        return $this->rooms;
-    }
-
-    public function addRoom(HouseRoom $room): self
-    {
-        if (!$this->rooms->contains($room)) {
-            $this->rooms[] = $room;
-        }
-
-        return $this;
-    }
-
-    public function removeRoom(HouseRoom $room): self
-    {
-        $this->rooms->removeElement($room);
-
-        return $this;
-    }
-
     public function getBookingAccommodation(): ?BookingAccommodation
     {
         return $this->bookingAccommodation;
@@ -89,6 +65,36 @@ class BookingHouse
     public function setBookingAccommodation(?BookingAccommodation $bookingAccommodation): self
     {
         $this->bookingAccommodation = $bookingAccommodation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BookingHouseRoom[]
+     */
+    public function getBookingHouseRooms(): Collection
+    {
+        return $this->bookingHouseRooms;
+    }
+
+    public function addBookingHouseRoom(BookingHouseRoom $bookingHouseRoom): self
+    {
+        if (!$this->bookingHouseRooms->contains($bookingHouseRoom)) {
+            $this->bookingHouseRooms[] = $bookingHouseRoom;
+            $bookingHouseRoom->setBookingHouse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBookingHouseRoom(BookingHouseRoom $bookingHouseRoom): self
+    {
+        if ($this->bookingHouseRooms->removeElement($bookingHouseRoom)) {
+            // set the owning side to null (unless already changed)
+            if ($bookingHouseRoom->getBookingHouse() === $this) {
+                $bookingHouseRoom->setBookingHouse(null);
+            }
+        }
 
         return $this;
     }
