@@ -29,6 +29,8 @@ class NotificationTourRepository extends ServiceEntityRepository
             ->leftJoin('n.tour', 't')
             ->andWhere("n.days >= DATE_DIFF(DATE_ADD(t.startDate, t.days, 'DAY'), CURRENT_DATE())")
             ->andWhere("t.service = :service")->setParameter('service', $service)
+            ->andWhere("t.canceled IS NULL OR t.canceled = :false")
+            ->andWhere("n.complete IS NULL OR n.complete = :false")->setParameter('false', false)
             ->getQuery()
             ->getResult()
         ;
