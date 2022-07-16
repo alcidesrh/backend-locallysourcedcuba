@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Old\AbstractClasses;
+namespace App\EntityOld\Old\AbstractClasses;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;

@@ -3,15 +3,22 @@
 namespace App\DataFixtures;
 
 use App\Entity\Destination;
-use App\Entity\Old\Destination as DestinationOld;
+use App\EntityOld\Old\Destination as DestinationOld;
 use App\Entity\Province;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
-class DestinationFixtures extends Fixture implements FixtureGroupInterface //, DependentFixtureInterface {
+class DestinationFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
+    public function getDependencies()
+    {
+        return [
+            ProvinceFixtures::class,
+        ];
+    }
 
     public function __construct(private EntityManagerInterface $oldEntityManager)
     {}
@@ -33,11 +40,4 @@ class DestinationFixtures extends Fixture implements FixtureGroupInterface //, D
         }
         $manager->flush();    
     }
-
-    // public function getDependencies()
-// {
-//     return [
-//         ProvinceFixtures::class,
-//     ];
-// }
 }

@@ -10,6 +10,8 @@ use App\GraphqlResolver\TourLsListResolver;
 use App\GraphqlResolver\TourUpdateResolver;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\GraphqlResolver\TourListScheduleWithGuideResolver;
+use App\GraphqlResolver\TourListScheduleWithoutGuideResolver;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -51,7 +53,23 @@ use Doctrine\Common\Collections\ArrayCollection;
                 'notificationComplete' => ['type' => 'Boolean', 'defaultValue' => null],
                 'template' => ['type' => 'Int', 'defaultValue' => null],
             ],
-        ]
+        ],
+        'listScheduleToursWithGuide' => [
+            'collection_query' => TourListScheduleWithGuideResolver::class,
+            'read' => false,
+            'args' => [
+                'service' => ['type' => 'String'],
+                'needle' => ['type' => 'String'],
+                'from' => ['type' => 'String'],
+                'to' => ['type' => 'String'],
+                'notification' => ['type' => '[Int]', 'defaultValue' => null],
+                'notificationComplete' => ['type' => 'Boolean', 'defaultValue' => null],
+            ],
+        ],
+        'listScheduleToursWithoutGuide' => [
+            'collection_query' => TourListScheduleWithoutGuideResolver::class,
+            'read' => false,
+        ],
     ]
 )]
 // #[ApiFilter(SearchFilter::class, properties:['service.code' => 'exact'])]

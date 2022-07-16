@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity\Old;
+namespace App\EntityOld\Old;
 
-use App\Entity\Old\AbstractClasses\NameAbstract;
+use App\EntityOld\Old\AbstractClasses\NameAbstract;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 

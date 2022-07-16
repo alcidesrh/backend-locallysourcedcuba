@@ -9,14 +9,22 @@ use App\Entity\TransportationPrice;
 use App\Entity\TransportationRoute;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
-class TransportationFixtures extends Fixture implements FixtureGroupInterface {//, DependentFixtureInterface {
+class TransportationFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface {
 
-public function __construct(private EntityManagerInterface $em)
+    public function __construct(private EntityManagerInterface $em)
 {}
+
+    public function getDependencies()
+    {
+        return [
+            DriverFixtures::class,
+        ];
+    }
 
 public static function getGroups(): array
 {

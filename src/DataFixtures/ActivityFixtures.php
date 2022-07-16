@@ -9,9 +9,16 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Faker\Factory;
 use App\Entity\ActivityCombo;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
-class ActivityFixtures extends Fixture implements FixtureGroupInterface //, DependentFixtureInterface {
+class ActivityFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
+    public function getDependencies()
+    {
+        return [
+            DestinationFixtures::class,
+        ];
+    }
 
     public static function getGroups(): array
     {
@@ -19,11 +26,11 @@ class ActivityFixtures extends Fixture implements FixtureGroupInterface //, Depe
     }
     public function load(ObjectManager $manager)
     {
-        foreach ($manager->getRepository(Activity::class)->findAll() as $value) {
-            $manager->remove($value);
+        // foreach ($manager->getRepository(Activity::class)->findAll() as $value) {
+        //     $manager->remove($value);
 
-        }
-        $manager->flush();
+        // }
+        // $manager->flush();
         // return;
 
         $faker = Factory::create();

@@ -24,6 +24,8 @@ class TourTemplateFixtures extends Fixture implements FixtureGroupInterface, Dep
     {
         return [
             ActivityFixtures::class,
+            TransportationFixtures::class,
+            HouseFixtures::class
         ];
     }
 
@@ -34,10 +36,10 @@ class TourTemplateFixtures extends Fixture implements FixtureGroupInterface, Dep
     public function load(ObjectManager $manager)
     {
 
-        foreach ($manager->getRepository(TourTemplate::class)->findAll() as $value) {
-            $manager->remove($value);
-        }
-        $manager->flush();
+        // foreach ($manager->getRepository(TourTemplate::class)->findAll() as $value) {
+        //     $manager->remove($value);
+        // }
+        // $manager->flush();
         // return;
 
         $faker = Factory::create();

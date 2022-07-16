@@ -5,10 +5,10 @@ doctrine:
             default:
                 # configure these for your database server
                 url: '%env(resolve:DATABASE_URL)%'
-            # old:
-            #     # configure these for your database server
-            #     url: 'mysql://root:root@127.0.0.1:3306/tour_agency' 
-            #     driver: 'pdo_mysql'
+            old:
+                # configure these for your database server
+                url: 'mysql://root:root@127.0.0.1:3306/tour_agency' 
+                driver: 'pdo_mysql'
     orm:
         default_entity_manager: default
         auto_generate_proxy_classes: true      
@@ -45,15 +45,15 @@ doctrine:
                         greatest: DoctrineExtensions\Query\Postgresql\Greatest
                         least: DoctrineExtensions\Query\Postgresql\Least
                         regexp_replace: DoctrineExtensions\Query\Postgresql\RegexpReplace        
-            # old:
-            #     connection: old
-            #     auto_mapping: true
-            #     naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware  
-            #     mappings:
-            #         App:
-            #             is_bundle: false
-            #             type: annotation
-            #             dir: '%kernel.project_dir%/src/Entity/Old'
-            #             prefix: 'App\Entity\Old'
-            #             alias: old                   
+            old:
+                connection: old
+                auto_mapping: true
+                naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware  
+                mappings:
+                    App:
+                        is_bundle: false
+                        type: annotation
+                        dir: '%kernel.project_dir%/src/EntityOld/Old'
+                        prefix: 'App\EntityOld\Old'
+                        alias: old                   
         

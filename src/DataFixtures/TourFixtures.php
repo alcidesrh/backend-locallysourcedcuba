@@ -20,18 +20,20 @@ use App\Entity\Transportation;
 use DateInterval;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
-class TourFixtures extends Fixture implements FixtureGroupInterface //, DependentFixtureInterface
+class TourFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 
 {
-    // public function getDependencies()
-    // {
-    //     return [
-    //         TourTemplateFixtures::class,
-    //     ];
-    // }
+    //php bin/console doctrine:fixtures:load --group=NotificationFixtures --append --purge-exclusions=province --purge-exclusions=location --purge-exclusions=location_distance --purge-exclusions=driver --purge-exclusions=guide --purge-exclusions=destination --purge-exclusions=activity --purge-exclusions=activity_combo --purge-exclusions=house --purge-exclusions=house_feature --purge-exclusions=house_house_feature --purge-exclusions=house_room --purge-exclusions=house_room_type --purge-exclusions=house_season --purge-exclusions=house_season_room --purge-exclusions=house_type 
+    public function getDependencies()
+    {
+        return [
+            TourTemplateFixtures::class,
+        ];
+    }
 
     public static function getGroups(): array
     {

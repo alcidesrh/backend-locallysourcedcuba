@@ -4,8 +4,8 @@ namespace App\DataFixtures;
 
 use App\Entity\Location;
 use App\Entity\LocationDistance;
-use App\Entity\Old\TransportationDestination;
-use App\Entity\Old\TransportationDestinationPrice;
+use App\EntityOld\Old\TransportationDestination;
+use App\EntityOld\Old\TransportationDestinationPrice;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\ORM\EntityManagerInterface;

@@ -70,6 +70,9 @@ class Guide
      */
     private $bonus;
 
+    private $fullName;
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -133,5 +136,10 @@ class Guide
         $this->bonus = $bonus;
 
         return $this;
+    }
+
+    public function getFullName(): ?string
+    {
+        return $this->name . ' ' . $this->lastName;
     }
 }

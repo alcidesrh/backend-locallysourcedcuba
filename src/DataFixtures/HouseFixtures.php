@@ -16,9 +16,17 @@ use DateTime;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
-class HouseFixtures extends Fixture implements FixtureGroupInterface
+class HouseFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
+
+    public function getDependencies()
+    {
+        return [
+            DestinationFixtures::class
+        ];
+    }
 
     public static function getGroups(): array
     {
